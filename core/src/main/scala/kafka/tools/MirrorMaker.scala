@@ -591,7 +591,7 @@ object MirrorMaker extends Logging with KafkaMetricsGroup {
         this.producer.send(record).get()
       } else {
           this.producer.send(record,
-            new MirrorMakerProducerCallback(record.topic(), record.key(), record.value()))
+            new MirrorMakerProducerCallback(record.topic()+"_bk", record.key(), record.value()))
       }
     }
 
@@ -637,11 +637,13 @@ object MirrorMaker extends Logging with KafkaMetricsGroup {
 
   private object defaultMirrorMakerMessageHandler extends MirrorMakerMessageHandler {
     override def handle(record: MessageAndMetadata[Array[Byte], Array[Byte]]): util.List[ProducerRecord[Array[Byte], Array[Byte]]] = {
-      Collections.singletonList(new ProducerRecord[Array[Byte], Array[Byte]](record.topic, record.key(), record.message()))
+      //Collections.singletonList(new ProducerRecord[Array[Byte], Array[Byte]](record.topic, record.key(), record.message()))
+      Collections.singletonList(new ProducerRecord[Array[Byte], Array[Byte]](record.topic+"_bk", record.key(), record.message()))
     }
 
     override def handle(record: BaseConsumerRecord): util.List[ProducerRecord[Array[Byte], Array[Byte]]] = {
-      Collections.singletonList(new ProducerRecord[Array[Byte], Array[Byte]](record.topic, record.key, record.value))
+     // Collections.singletonList(new ProducerRecord[Array[Byte], Array[Byte]](record.topic, record.key, record.value))
+       Collections.singletonList(new ProducerRecord[Array[Byte], Array[Byte]](record.topic+"_bk", record.key, record.value))
     }
   }
 
